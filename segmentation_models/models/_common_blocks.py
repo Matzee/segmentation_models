@@ -63,6 +63,10 @@ def Conv2dBn(
 
         if activation:
             x = layers.Activation(activation, name=act_name)(x)
+        # if use_dropout:
+        #     if use_batchnorm and use_dropout:
+        #         raise Exception("Do not use dropout and batch normalization together")
+        #     x = layers.Dropout(rate=dropout_rate)(x)
 
         return x
 
