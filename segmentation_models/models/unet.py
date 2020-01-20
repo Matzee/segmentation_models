@@ -115,6 +115,7 @@ def build_unet(
         classes=1,
         activation='sigmoid',
         use_batchnorm=True,
+        monte_carlo_dropout=False
 ):
     input_ = backbone.input
     x = backbone.output
@@ -128,6 +129,11 @@ def build_unet(
         x = Conv3x3BnReLU(512, use_batchnorm, name='center_block1')(x)
         x = Conv3x3BnReLU(512, use_batchnorm, name='center_block2')(x)
 
+
+    if monte_carlo_dropout:
+        x = layers.Dropout(0.3, name='mc_dropout')(x, training=True)
+
+    
     # building decoder blocks
     for i in range(n_upsample_blocks):
 
@@ -148,7 +154,6 @@ def build_unet(
         name='final_conv',
     )(x)
     x = layers.Activation(activation, name=activation)(x)
-
     # create keras model instance
     model = models.Model(input_, x)
 
@@ -171,6 +176,7 @@ def Unet(
         decoder_block_type='upsampling',
         decoder_filters=(256, 128, 64, 32, 16),
         decoder_use_batchnorm=True,
+        monte_carlo_dropout=False,
         **kwargs
 ):
     """ Unet_ is a fully convolution neural network for image semantic segmentation
@@ -238,6 +244,7 @@ def Unet(
         activation=activation,
         n_upsample_blocks=len(decoder_filters),
         use_batchnorm=decoder_use_batchnorm,
+        monte_carlo_dropout=monte_carlo_dropout
     )
 
     # lock encoder weights for fine-tuning
