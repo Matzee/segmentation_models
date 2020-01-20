@@ -27,7 +27,11 @@ def get_submodules():
 #  Blocks
 # ---------------------------------------------------------------------
 
-def Conv3x3BnReLU(filters, use_batchnorm, name=None):
+def Conv3x3BnReLU(filters, regularization, name=None):
+    if regularization=="batchnorm":
+        use_batchnorm=True
+    elif regularization=="dropout":
+        use_dropout=True
     kwargs = get_submodules()
 
     def wrapper(input_tensor):
@@ -39,6 +43,7 @@ def Conv3x3BnReLU(filters, use_batchnorm, name=None):
             padding='same',
             use_batchnorm=use_batchnorm,
             name=name,
+            use_dropout=use_dropout,
             **kwargs
         )(input_tensor)
 
